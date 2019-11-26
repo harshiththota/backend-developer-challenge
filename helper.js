@@ -33,6 +33,7 @@ exports.getDisbursement = function (fields, files) {
       // console.log(result);
       console.log('** : ', result.length);
       
+      // Filter the undefined coloumns
       result = _.filter(result, (obj) => {
         if (obj[ROW.DATE] && obj[ROW.ORDER_ID] && obj[ROW.NONPROFIT]
           && obj[ROW.FEE] && obj[ROW.DONATION_CURRENCY] && obj[ROW.DONATION_AMOUNT]) {
@@ -40,6 +41,43 @@ exports.getDisbursement = function (fields, files) {
           }
       });
 
-      console.log('result ; ', result.length);
-    })
+      return exports.baseCurrency(fields.currencyType)
+        .then((currency) => {
+          console.log('change : ', result[9][ROW.DONATION_CURRENCY], currency[result[9][ROW.DONATION_CURRENCY]]);
+          console.log('before : ', result[9]);
+          
+          // Update the currency based on base currency
+          _.forEach(result, (obj) => {
+              let change = currency[obj[ROW.DONATION_CURRENCY]];
+              obj[ROW.DONATION_AMOUNT] = change * obj[ROW.DONATION_AMOUNT];
+              obj[ROW.FEE] = change * obj[ROW.FEE];
+            });
+          
+          console.log('** : ', result[9]);
+          console.log('********************');
+          // Group the result by  non profit
+          const groupedNonprofit = _.groupBy(result, ROW.NONPROFIT);
+          // console.log('grouped : ', groupedNonprofit);
+
+          const finalResult = {};
+
+          _.forEach(groupedNonprofit, (values, nonProfit) => {
+            let totalAmount = 0;
+            let totalFee = 0;
+
+            _.forEach(values, (val) => {
+              totalAmount += val[ROW.DONATION_AMOUNT];
+              totalFee += val[ROW.FEE];
+            });
+
+            finalResult[nonProfit] = {
+              'Total Amount': totalAmount,
+              'Total Fee' :totalFee,
+              'Number of Donations': values.length
+            };
+          });
+
+          console.log('final : ', finalResult);
+        });
+    });
 };
