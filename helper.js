@@ -6,7 +6,7 @@ const ROW = {
   ORDER_ID: 'Order Id',
   NONPROFIT: 'Nonprofit',
   DONATION_CURRENCY: 'Donation Currency',
-  DONATION_AMOUNT: 'Donation Currency',
+  DONATION_AMOUNT: 'Donation Amount',
   FEE: 'Fee'
 };
 
