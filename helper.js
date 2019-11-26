@@ -53,9 +53,14 @@ exports.getDisbursement = function (fields, files) {
         .then((currency) => {
           // Update the currency based on base currency
           _.forEach(result, (obj) => {
-              let change = currency[obj[ROW.DONATION_CURRENCY]];
-              obj[ROW.DONATION_AMOUNT] = change * obj[ROW.DONATION_AMOUNT];
-              obj[ROW.FEE] = change * obj[ROW.FEE];
+            // If we did'nt found the currency the keep it default as 1
+            let change = currency[obj[ROW.DONATION_CURRENCY]] || 1;
+            
+            // Remove , in the amount 
+            obj[ROW.DONATION_AMOUNT] = _.replace(obj[ROW.DONATION_AMOUNT], ',', '');
+            
+            obj[ROW.DONATION_AMOUNT] = change * parseInt(obj[ROW.DONATION_AMOUNT], 10);
+            obj[ROW.FEE] = change * parseInt(obj[ROW.FEE], 10);
             });
           
           // Group the result by  non profit
