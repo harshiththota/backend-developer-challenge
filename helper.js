@@ -1,5 +1,6 @@
 const csv = require('csvtojson');
 const _ = require('lodash');
+const axios = require('axios');
 
 const ROW = {
   DATE: 'Date',
@@ -8,6 +9,18 @@ const ROW = {
   DONATION_CURRENCY: 'Donation Currency',
   DONATION_AMOUNT: 'Donation Amount',
   FEE: 'Fee'
+};
+
+exports.baseCurrency = function (base) {
+  return axios.get('https://api.exchangeratesapi.io/latest', {
+    params: {
+      base: _.toUpper(base),
+    }
+  }).then((res) => {
+    return res.data.rates;
+  }).catch((error) => {
+    console.log('error : ', error);
+  });
 };
 
 exports.getDisbursement = function (fields, files) {
