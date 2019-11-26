@@ -25,6 +25,18 @@ exports.baseCurrency = function (base) {
   });
 };
 
+exports.storeResult = function (finalResult) {
+  // Store the data into a file
+  const csv = json2csv(finalResult, ['Nonprofit', 'Total Amount', 'Total Fee', 'Number of Donations',]);
+  return new Promise((resolve, reject) => {
+    return fs.writeFile('./result.csv', csv, function (err) {
+      if (err) throw err;
+      console.log('file saved');
+      resolve();
+    });
+  });
+};
+
 exports.getDisbursement = function (fields, files) {
   return csv()
     .fromFile(files.csvFile.path)
@@ -70,15 +82,7 @@ exports.getDisbursement = function (fields, files) {
             finalResult.push(data);
           });
 
-          // Store the data into a file
-          const csv = json2csv(finalResult, ['Nonprofit', 'Total Amount', 'Total Fee', 'Number of Donations', ]);
-          return new Promise((resolve, reject) => {
-            return fs.writeFile('./result.csv', csv, function (err) {
-              if (err) throw err;
-              console.log('file saved');
-              resolve();
-            });
-          });
+          return exports.storeResult(finalResult);
         });
     });
 };
