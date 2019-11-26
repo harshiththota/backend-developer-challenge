@@ -1,0 +1,29 @@
+{
+  "name": "backend-developer-challenge",
+  "version": "1.0.0",
+  "description": "### Objective Create a disbursement report from a list of donations in CSV.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/give-india/backend-developer-challenge.git"
+  },
+  "author": "harshiththota",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/give-india/backend-developer-challenge/issues"
+  },
+  "homepage": "https://github.com/give-india/backend-developer-challenge#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "csvtojson": "^2.0.10",
+    "express": "^4.17.1",
+    "formidable": "^1.2.1",
+    "lodash": "^4.17.15",
+    "nodemon": "^2.0.1"
+  }
+}

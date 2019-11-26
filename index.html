@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <form action="/submit" method="post" enctype="multipart/form-data">
+        Currency Type: <select name="currencyType">
+          <option value="inr">INR</option>
+          <option value="eur">EUR</option>
+          <option value="usd">USD</option>
+          <option value="aed">AED</option>
+        </select> <br />
+        Upload CSV:
+        <input type="file" name="csvFile" id="csvFile"> <br />
+        <input type="submit" />
+    </form>
+</body>
+</html>
