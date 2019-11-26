@@ -1,6 +1,8 @@
 const csv = require('csvtojson');
 const _ = require('lodash');
 const axios = require('axios');
+const json2csv = require('json2csv').parse;
+const fs = require('fs');
 
 const ROW = {
   DATE: 'Date',
@@ -24,15 +26,9 @@ exports.baseCurrency = function (base) {
 };
 
 exports.getDisbursement = function (fields, files) {
-  // console.log('fields ; ', fields);
-  // console.log('files : ', files.csvFile);
-
   return csv()
     .fromFile(files.csvFile.path)
-    .then((result) => {
-      // console.log(result);
-      console.log('** : ', result.length);
-      
+    .then((result) => {    
       // Filter the undefined coloumns
       result = _.filter(result, (obj) => {
         if (obj[ROW.DATE] && obj[ROW.ORDER_ID] && obj[ROW.NONPROFIT]
@@ -43,9 +39,6 @@ exports.getDisbursement = function (fields, files) {
 
       return exports.baseCurrency(fields.currencyType)
         .then((currency) => {
-          console.log('change : ', result[9][ROW.DONATION_CURRENCY], currency[result[9][ROW.DONATION_CURRENCY]]);
-          console.log('before : ', result[9]);
-          
           // Update the currency based on base currency
           _.forEach(result, (obj) => {
               let change = currency[obj[ROW.DONATION_CURRENCY]];
@@ -53,13 +46,10 @@ exports.getDisbursement = function (fields, files) {
               obj[ROW.FEE] = change * obj[ROW.FEE];
             });
           
-          console.log('** : ', result[9]);
-          console.log('********************');
           // Group the result by  non profit
           const groupedNonprofit = _.groupBy(result, ROW.NONPROFIT);
-          // console.log('grouped : ', groupedNonprofit);
-
-          const finalResult = {};
+          
+          const finalResult = [];
 
           _.forEach(groupedNonprofit, (values, nonProfit) => {
             let totalAmount = 0;
@@ -70,14 +60,25 @@ exports.getDisbursement = function (fields, files) {
               totalFee += val[ROW.FEE];
             });
 
-            finalResult[nonProfit] = {
+            const data = {
+              'Nonprofit': nonProfit,
               'Total Amount': totalAmount,
               'Total Fee' :totalFee,
               'Number of Donations': values.length
             };
+
+            finalResult.push(data);
           });
 
-          console.log('final : ', finalResult);
+          // Store the data into a file
+          const csv = json2csv(finalResult, ['Nonprofit', 'Total Amount', 'Total Fee', 'Number of Donations', ]);
+          return new Promise((resolve, reject) => {
+            return fs.writeFile('./result.csv', csv, function (err) {
+              if (err) throw err;
+              console.log('file saved');
+              resolve();
+            });
+          });
         });
     });
 };
