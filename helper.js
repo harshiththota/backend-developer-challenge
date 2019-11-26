@@ -13,6 +13,11 @@ const ROW = {
   FEE: 'Fee'
 };
 
+/**
+ * @param {String} Currency Type
+ * From the given API fetches the currency rates based on given currency
+ * @returns {Object} Currency rates based on base currurency
+*/
 exports.baseCurrency = function (base) {
   return axios.get('https://api.exchangeratesapi.io/latest', {
     params: {
@@ -25,6 +30,10 @@ exports.baseCurrency = function (base) {
   });
 };
 
+/**
+ * @param {Object} json object of end result
+ * Store the result in the file
+*/
 exports.storeResult = function (finalResult) {
   // Store the data into a file
   const csv = json2csv(finalResult, ['Nonprofit', 'Total Amount', 'Total Fee', 'Number of Donations',]);
@@ -37,6 +46,11 @@ exports.storeResult = function (finalResult) {
   });
 };
 
+/**
+ * @param {Object} {fields} currency type
+ * @param {Object} {files} file
+ * Calculate the disbursment and store the result in a result file
+*/
 exports.getDisbursement = function (fields, files) {
   return csv()
     .fromFile(files.csvFile.path)
@@ -66,8 +80,10 @@ exports.getDisbursement = function (fields, files) {
           // Group the result by  non profit
           const groupedNonprofit = _.groupBy(result, ROW.NONPROFIT);
           
+          // Stores the list of nonProfit data
           const finalResult = [];
 
+          // Prepare the final result
           _.forEach(groupedNonprofit, (values, nonProfit) => {
             let totalAmount = 0;
             let totalFee = 0;
